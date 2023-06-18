@@ -2,7 +2,7 @@
   "name": "react-homework-template",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://goitacademy.github.io/react-homework-template/",
+  "homepage": "https://marynashchedrova.github.io/goit-react-hw-07-phonebook/",
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^5.16.3",
@@ -13,6 +13,7 @@
     "react-dom": "^18.1.0",
     "react-redux": "^8.1.0",
     "react-scripts": "5.0.1",
+    "redux-selectors": "^0.0.2",
     "reselect": "^4.1.8",
     "web-vitals": "^2.1.3"
   },
