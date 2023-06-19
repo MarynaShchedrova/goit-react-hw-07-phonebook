@@ -1,53 +1,52 @@
 import css from './ContactList.module.css';
-import { useSelector } from 'react-redux';
-import { getFilter } from '../../redux/filterSlice';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
-  useGetContactsQuery,
-  useDeleteContactMutation,
+  getContacts,
+  getError,
+  getFilter,
+  getIsLoading,
+  deleteContact,
+  fetchContacts,
 } from '../../redux/contactsSlice';
 
 export const ContactList = () => {
+  const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
+  const isLoading = useSelector(getIsLoading);
+  const error = useSelector(getError);
   const filter = useSelector(getFilter);
-  const { data: contacts, isFetching } = useGetContactsQuery();
-  const [deleteContact, { isLoading }] = useDeleteContactMutation();
 
-  const findContacts = () => {
-    const normalizedFilter = filter.toLowerCase();
-    if (contacts) {
-      return contacts.filter(contact =>
-        contact.name.toLowerCase().includes(normalizedFilter)
-      );
-    }
-  };
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
-  const filteredContacts = findContacts();
+  const filteredContacts = contacts.filter(contact =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
 
   return (
     <>
-      {isFetching && <p>Loading...</p>}
-      {contacts && (
-        <ul>
-          {filteredContacts.map(({ name, phone, id }) => {
-            return (
-              <li key={id}>
-                <div>
-                  <h3>{name}:</h3>
-                  <p>{phone}</p>
-                </div>
-                <button
-                  class={css.contactListItemBtn}
-                  type="button"
-                  onClick={() => {
-                    deleteContact(id);
-                  }}
-                >
-                  {isLoading ? '...' : 'Delete'}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+      {isLoading && !error && <b>Request in progress...</b>}
+      <ul>
+        {filteredContacts.map(({ name, phone, id }) => {
+          return (
+            <li key={id}>
+              <div>
+                <h3>{name}:</h3>
+                <p>{phone}</p>
+              </div>
+              <button
+                class={css.contactListItemBtn}
+                type="button"
+                onClick={() => dispatch(deleteContact(id))}
+              >
+                {isLoading ? '...' : 'Delete'}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
     </>
   );
 };

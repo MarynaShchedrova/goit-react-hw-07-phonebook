@@ -1,18 +1,16 @@
 import css from './ContactForm.module.css';
-import { useState } from 'react';
-import {
-  useGetContactsQuery,
-  useAddContactMutation,
-} from '../../redux/contactsSlice';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact, getContacts } from '../../redux/contactsSlice';
 
 export const ContactForm = () => {
+  const dispatch = useDispatch();
   const [name, setName] = useState('');
   const [phone, setNumber] = useState('');
-  const { data: contacts } = useGetContactsQuery();
-  const [addContact] = useAddContactMutation();
+  const contacts = useSelector(getContacts);
 
   const handleChange = event => {
-    const { name, value } = event.target;
+    const { name, value } = event.currentTarget;
     switch (name) {
       case 'name':
         setName(value);
@@ -27,22 +25,14 @@ export const ContactForm = () => {
 
   const handleSubmit = event => {
     event.preventDefault();
-    const contact = {
-      name,
-      phone,
-    };
-
-    const enterContacts = contacts.some(
-      contact =>
-        (contact.name === name.toLowerCase() && contact.phone === phone) ||
-        contact.phone === phone
-    );
-    enterContacts
-      ? alert(`${name} or ${phone} is already in contacts`)
-      : addContact(contact);
-
-    setName('');
-    setNumber('');
+    if (name && phone) {
+      if (contacts.find(el => el.name === name)) {
+        return alert(`${name} is already in contacts`);
+      }
+      dispatch(addContact({ name, phone }));
+      setName('');
+      setNumber('');
+    }
   };
 
   return (
